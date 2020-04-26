@@ -1,11 +1,40 @@
 const mongoose = require("mongoose");
-const uniqueValidator = require("mongoose-unique-validator");
 
-const groupSchema = new mongoose.Schema({
-  admins: {},
-  users: {},
+const orderSchema = new mongoose.Schema({
+	user: {
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "User",
+	},
+	products: [
+		{
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Product",
+		},
+	],
+	payment: {
+		method: {
+			type: String,
+			required: true,
+		},
+		complete: {
+			type: Boolean,
+			default: false,
+		},
+	},
+	status: {
+		type: String,
+		required: true,
+	},
 });
 
-const Group = mongoose.model("Group", groupSchema);
+orderSchema.set("toJSON", {
+	transoform: (document, returnedObject) => {
+		returnedObject.id = returnedObject._id.toString();
+		delete returnedObject._id;
+		delete returnedObject.__v;
+	},
+});
 
-module.exports = Group;
+const Order = mongoose.model("Order", orderSchema);
+
+module.exports = Order;

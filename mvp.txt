@@ -1,0 +1,45 @@
+user:
+    user can register new account
+        username,
+        email,
+        password
+
+    user can login in,
+        username,
+        password
+    
+    user can logout,
+
+    user can view products by category,
+
+    user can search products by name,
+
+    user can add products to shoppingcart,
+
+    user can remove products from shoppingcart,
+
+logged in user:
+
+    user can order products from shopping cart:
+        full name, address, payment method
+
+    user can view own orders and see their status,
+
+admin:
+    admin can login into adminpanel that is
+    not part of the main frontend,
+
+    admin can see all products and the amount of produce in inventory,
+
+    admin can add new products,
+
+    admin can edit products,
+
+    admin can delete products,
+
+    admin can see all orders ordered by status, (search possible by P_ID)
+    
+    admin can edit order's status,
+
+
+    

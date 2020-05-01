@@ -10,11 +10,27 @@ usersRouter.get("/", async (req, res) => {
 
 //get user by id
 usersRouter.get("/:id", async (req, res) => {
-  const user = await User.findById(req.params.id).populate(
-    "orders",
-    "shoppingcart"
-  );
+  const user = await User.findById(req.params.id)
+    .populate({
+      path: "orders",
+      select: "payment products status",
+      populate: {
+        path: "products",
+        model: "Product",
+        select: "info name",
+      },
+    })
+    .populate("shoppingcart", { name: 1, info: 1 });
   res.json(user.toJSON());
+});
+
+usersRouter.put("/:id/editshoppingcart", async (req, res) => {
+  const body = req.body;
+  await User.findByIdAndUpdate(
+    req.params.id,
+    { shoppingcart: [...body.products] },
+    { new: true }
+  );
 });
 
 //create new user / register

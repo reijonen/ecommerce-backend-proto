@@ -1,7 +1,7 @@
 const logger = require("./logger");
 
 const reqLogger = (req, res, next) => {
-  logger.info("Methor: ", req.methor);
+  logger.info("Method: ", req.method);
   logger.info("Path: ", req.path);
   logger.info("---");
   next();

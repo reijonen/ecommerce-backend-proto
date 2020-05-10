@@ -49,7 +49,6 @@ usersRouter.post("/register", async (req, res) => {
   const user = new User({
     firstName: body.firstName,
     lastName: body.lastName,
-    name: body.name,
     email: body.email,
     passwordHash,
   });
@@ -59,16 +58,8 @@ usersRouter.post("/register", async (req, res) => {
   res.json(savedUser);
 });
 
-module.exports = usersRouter;
-
 usersRouter.post("/registeradmin", async (req, res) => {
   const body = req.body;
-
-  if (body.password.length < 4) {
-    return res
-      .status(400)
-      .json({ error: "Password must be over 3 characters long" });
-  }
 
 
   const saltRounds = 10;

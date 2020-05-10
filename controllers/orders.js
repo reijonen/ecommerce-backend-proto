@@ -97,6 +97,8 @@ ordersRouter.put("/:id/completepayment", async (req, res) => {
         { new: true }
       ).populate("products");
       res.json(updatedOrder.toJSON());
+    } else {
+      return res.status(401).json({ error: "unauthorized" });
     }
   }
 });
@@ -111,6 +113,8 @@ ordersRouter.delete("/:id", async (req, res) => {
     if (user.privilege === 1 || user.privilege === 2) {
       await Order.findByIdAndRemove(req.params.id);
       res.status(204).end();
+    } else {
+      return res.status(401).json({ error: "unauthorized" });
     }
   }
 });

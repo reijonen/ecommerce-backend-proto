@@ -2,14 +2,11 @@ const mongoose = require("mongoose");
 const uniqueValidator = require("mongoose-unique-validator");
 
 const userSchema = new mongoose.Schema({
-  username: {
-    required: true,
+  firstName: {
     type: String,
-    unique: true,
-    minlength: 4,
-    maxlength: 12,
+    required: true,
   },
-  name: {
+  lastName: {
     type: String,
     required: true,
   },
@@ -31,6 +28,10 @@ const userSchema = new mongoose.Schema({
       ref: "Order",
     },
   ],
+  privilege: {
+    type: Number,
+    default: 0,
+  },
 });
 
 userSchema.plugin(uniqueValidator);

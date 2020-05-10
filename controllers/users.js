@@ -34,7 +34,7 @@ usersRouter.put("/:id/editshoppingcart", async (req, res) => {
 });
 
 //create new user / register
-usersRouter.post("/", async (req, res) => {
+usersRouter.post("/register", async (req, res) => {
   const body = req.body;
 
   if (body.password.length < 4) {
@@ -47,13 +47,43 @@ usersRouter.post("/", async (req, res) => {
   const passwordHash = await bcrypt.hash(body.password, saltRounds);
 
   const user = new User({
-    username: body.username,
+    firstName: body.firstName,
+    lastName: body.lastName,
     name: body.name,
     email: body.email,
     passwordHash,
   });
 
   const savedUser = await user.save();
+
+  res.json(savedUser);
+});
+
+module.exports = usersRouter;
+
+usersRouter.post("/registeradmin", async (req, res) => {
+  const body = req.body;
+
+  if (body.password.length < 4) {
+    return res
+      .status(400)
+      .json({ error: "Password must be over 3 characters long" });
+  }
+
+
+  const saltRounds = 10;
+  const passwordHash = await bcrypt.hash(body.password, saltRounds);
+
+  const user = new User({
+    firstName: body.firstName,
+    lastName: body.lastName,
+    email: body.email,
+    privilege: body.privilege,
+    passwordHash,
+  });
+
+  const savedUser = await user.save();
+
 
   res.json(savedUser);
 });

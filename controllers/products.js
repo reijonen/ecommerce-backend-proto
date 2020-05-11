@@ -2,6 +2,7 @@ const productsRouter = require("express").Router();
 const Product = require("../models/product");
 const getToken = require("../utils/getToken");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 
 productsRouter.get("/", async (req, res) => {
   const products = await Product.find({});

@@ -40,6 +40,9 @@ loginRouter.post("/admin", async (req, res) => {
   const body = req.body;
 
   const user = await User.findOne({ email: body.email });
+  if (!user) {
+    return res.status(401).json({ error: "invalid email or password" });
+  }
   if (user.privilege === 0) {
     return res.status(401).json({
       error: "administrator access required",

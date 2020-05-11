@@ -32,17 +32,15 @@ usersRouter.get("/:id", async (req, res) => {
   if (!token || !decodedToken.id) {
     return res.status(401).json({ error: "unauthorized" });
   } else {
-    const user = await User.findById(req.params.id)
-      .populate({
-        path: "orders",
-        select: "payment products status",
-        populate: {
-          path: "products",
-          model: "Product",
-          select: "info name",
-        },
-      })
-      .populate("shoppingcart", { name: 1, info: 1 });
+    const user = await User.findById(req.params.id).populate({
+      path: "orders",
+      select: "payment products status",
+      populate: {
+        path: "products",
+        model: "Product",
+        select: "info name",
+      },
+    });
 
     if (decodedToken.id === req.params.id || user.privilege === 2) {
       res.json(user.toJSON());
@@ -52,13 +50,24 @@ usersRouter.get("/:id", async (req, res) => {
   }
 });
 
-usersRouter.put("/:id/editshoppingcart", async (req, res) => {
-  const body = req.body;
-  await User.findByIdAndUpdate(
-    req.params.id,
-    { shoppingcart: [...body.products] },
-    { new: true }
-  );
+usersRouter.put("/editshoppingcart", async (req, res) => {
+  //query {prod_id: xxx, type: "add" || "remove"}
+
+  const token = getToken.getToken(req);
+  const decodedToken = jwt.verify(token, process.env.SECRET);
+  if (!token || !decodedToken.id) {
+    return res.status(401).json({ error: "unauthorized" });
+  } else {
+    const body = req.body;
+    const user = await User.findById(decodedToken.id);
+    if (body.type === "add") {
+      user.shoppingcart = user.shoppingcart.concant(body.prod_id);
+    } else if (body.type === "remove") {
+      user.shoppingcart = user.shoppingcart.filter((i) => i !== body.prod_id);
+    }
+
+    await user.save();
+  }
 });
 
 //create new user / register

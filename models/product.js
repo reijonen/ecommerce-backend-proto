@@ -27,6 +27,11 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  imageUrl: {
+    type: String,
+    default:
+      "https://nohobbysfound.net/assets/images/variant4-transparentbg-300x300.png",
+  },
 });
 
 productSchema.set("toJSON", {

@@ -6,7 +6,9 @@ const User = require("../models/user");
 loginRouter.post("/", async (req, res) => {
   const body = req.body;
 
-  const user = await User.findOne({ email: body.email });
+  const user = await User.findOne({
+    email: body.email,
+  }).populate("shoppingcart", { name: 1, price: 1 });
   const passwordCorrect =
     user === null
       ? false
@@ -25,9 +27,12 @@ loginRouter.post("/", async (req, res) => {
 
   res.status(200).send({
     token,
-    firstName: user.firstName,
-    lastName: user.lastName,
-    userId: user._id,
+    user: {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      userId: user._id,
+      shoppingcart: user.shoppingcart,
+    },
   });
 });
 

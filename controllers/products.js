@@ -29,6 +29,7 @@ productsRouter.post("/", async (req, res) => {
         price: body.price,
         stock: body.stock ? body.stock : 0,
         categories: [...body.categories],
+        imageUrl: body.imageUrl,
       });
       const savedProduct = await product.save();
       res.json(savedProduct.toJSON());

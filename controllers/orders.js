@@ -64,6 +64,7 @@ ordersRouter.post("/", async (req, res) => {
       payment: body.payment,
       status: "pending",
       address: { ...body.address },
+      date: body.date,
     });
     const user = await User.findById(decodedToken.id);
     const order = await newOrder.save();

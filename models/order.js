@@ -34,6 +34,10 @@ const orderSchema = new mongoose.Schema({
     country: { type: String, required: true },
     zip: { type: Number, required: true },
   },
+  date: {
+    type: Date,
+    required: true,
+  },
 });
 
 orderSchema.set("toJSON", {

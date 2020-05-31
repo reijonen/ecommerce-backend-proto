@@ -14,6 +14,7 @@ const usersRouter = require("./controllers/users");
 const loginRouter = require("./controllers/login");
 const productsRouter = require("./controllers/products");
 const ordersRouter = require("./controllers/orders");
+const categoriesRouter = require("./controllers/categories");
 
 //import and connect mongoose
 const mongoose = require("mongoose");
@@ -24,16 +25,16 @@ mongoose.set("useCreateIndex", true);
 mongoose.set("useUnifiedTopology", true);
 
 mongoose
-	.connect(config.MONGODB_URI, {
-		useNewUrlParser: true,
-		useUnifiedTopology: true,
-	})
-	.then(() => {
-		logger.info("connected to MongoDB");
-	})
-	.catch((e) => {
-		logger.error("Error connection to mongoDB: ", e.message);
-	});
+  .connect(config.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    logger.info("connected to MongoDB");
+  })
+  .catch((e) => {
+    logger.error("Error connection to mongoDB: ", e.message);
+  });
 
 //express stuff
 app.use(cors());
@@ -46,6 +47,7 @@ app.use("/api/users", usersRouter);
 app.use("/api/login", loginRouter);
 app.use("/api/products", productsRouter);
 app.use("/api/orders", ordersRouter);
+app.use("/api/categories", categoriesRouter);
 
 app.use(middleware.unknownEndpoint);
 app.use(middleware.errorHandler);

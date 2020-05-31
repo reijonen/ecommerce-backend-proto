@@ -19,10 +19,12 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  categories: {
-    type: [String],
-    required: true,
-  },
+  categories: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+    },
+  ],
   incompleteOrders: {
     type: Number,
     default: 0,

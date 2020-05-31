@@ -3,6 +3,7 @@ const Product = require("../models/product");
 const getToken = require("../utils/getToken");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+const Category = require("../models/category");
 
 productsRouter.get("/", async (req, res) => {
   const products = await Product.find({});
@@ -24,15 +25,33 @@ productsRouter.post("/", async (req, res) => {
   } else {
     const user = await User.findById(decodedToken.id);
     if (user.privilege === 2) {
+      var categories = [];
+      body.categories.map(async (c) => {
+        const tmp = Category.find({ name: c });
+        if (tmp === undefined) {
+          try {
+            const newCategory = await Category.save({ name: c, products: [] });
+            categories.push(newCategory._id);
+          } catch (e) {
+          }
+        } else {
+          categories.push(_tmp);
+        }
+      });
       const product = new Product({
         name: body.name,
         info: body.info,
         price: body.price,
         stock: body.stock ? body.stock : 0,
-        categories: [...body.categories],
+        categories: [...categories],
         imageUrl: body.imageUrl,
       });
       const savedProduct = await product.save();
+      categories.map(async (c) => {
+        try {
+        } catch (e) {
+        }
+      });
       res.json(savedProduct.toJSON());
     } else {
       return res.status(401).json({ error: "unauthorized" });

@@ -35,7 +35,7 @@ productsRouter.post("/", async (req, res) => {
           } catch (e) {
           }
         } else {
-          categories.push(_tmp);
+          categories.push(tmp._id);
         }
       });
       const product = new Product({
@@ -49,6 +49,15 @@ productsRouter.post("/", async (req, res) => {
       const savedProduct = await product.save();
       categories.map(async (c) => {
         try {
+          const tmp = await Category.findOneById(c);
+          Category.findByIdAndUpdate(
+            c,
+            {
+              name: tmp.name,
+              products: [...tmp.prodtucts, savedProduct._id],
+            },
+            { new: true }
+          );
         } catch (e) {
         }
       });

@@ -25,43 +25,48 @@ productsRouter.post("/", async (req, res) => {
   } else {
     const user = await User.findById(decodedToken.id);
     if (user.privilege === 2) {
-      var categories = [];
-      body.categories.map(async (c) => {
-        const tmp = Category.find({ name: c });
-        if (tmp === undefined) {
+      let categories = [];
+      try {
+        await body.categories.map(async (c) => {
+          const tmp = await Category.find({ name: c });
+          if (tmp[0] === undefined) {
+            try {
+              const newCategory = new Category({ name: c, products: [] });
+              const savedCategory = await newCategory.save();
+              categories.concat(savedCategory._id);
+            } catch (e) {
+            }
+          } else {
+            categories.push(tmp[0]._id);
+          }
+        });
+
+        const product = new Product({
+          name: body.name,
+          info: body.info,
+          price: body.price,
+          stock: body.stock ? body.stock : 0,
+          categories: [...categories],
+          imageUrl: body.imageUrl === "" ? undefined : body.imageUrl,
+        });
+        const savedProduct = await product.save();
+        categories.map(async (c) => {
           try {
-            const newCategory = await Category.save({ name: c, products: [] });
-            categories.push(newCategory._id);
+            const tmp = await Category.findById(c);
+            Category.findByIdAndUpdate(
+              c,
+              {
+                name: tmp.name,
+                products: [...tmp.prodtucts, savedProduct._id],
+              },
+              { new: true }
+            );
           } catch (e) {
           }
-        } else {
-          categories.push(tmp._id);
-        }
-      });
-      const product = new Product({
-        name: body.name,
-        info: body.info,
-        price: body.price,
-        stock: body.stock ? body.stock : 0,
-        categories: [...categories],
-        imageUrl: body.imageUrl,
-      });
-      const savedProduct = await product.save();
-      categories.map(async (c) => {
-        try {
-          const tmp = await Category.findOneById(c);
-          Category.findByIdAndUpdate(
-            c,
-            {
-              name: tmp.name,
-              products: [...tmp.prodtucts, savedProduct._id],
-            },
-            { new: true }
-          );
-        } catch (e) {
-        }
-      });
-      res.json(savedProduct.toJSON());
+        });
+        res.json(savedProduct.toJSON());
+      } catch (e) {
+      }
     } else {
       return res.status(401).json({ error: "unauthorized" });
     }

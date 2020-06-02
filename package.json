@@ -1,7 +1,7 @@
 {
   "name": "ecommerce-backend-proto",
   "version": "1.0.0",
-  "description": "backend",
+  "description": "Node.js e-commerce API",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -27,7 +27,6 @@
     "url": "git+https://github.com/reijonen/ecommerce-backend-proto.git"
   },
   "author": "reijonen",
-  "license": "ISC",
   "bugs": {
     "url": "https://github.com/reijonen/ecommerce-backend-proto/issues"
   },

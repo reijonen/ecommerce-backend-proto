@@ -102,25 +102,30 @@ usersRouter.post("/registeradmin", async (req, res) => {
   const decodedToken = jwt.verify(token, process.env.SECRET);
   if (!token || !decodedToken.id) {
     return res.status(401).json({ error: "unauthorized" });
-  } else {
-
-
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(body.password, saltRounds);
-
-    const user = new User({
-      firstName: body.firstName,
-      lastName: body.lastName,
-      email: body.email,
-      privilege: body.privilege,
-      passwordHash,
-    });
-
-    const savedUser = await user.save();
-
-
-    res.json(savedUser);
   }
+
+  const requestingUser = await User.findById(decodedToken.id);
+  if (!requestingUser || requestingUser.privilege !== 2) {
+    return res.status(403).json({ error: "forbidden" });
+  }
+
+  if (!body.password || body.password.length < 4) {
+    return res
+      .status(400)
+      .json({ error: "Password must be over 3 characters long" });
+  }
+
+  const passwordHash = await bcrypt.hash(body.password, 10);
+  const user = new User({
+    firstName: body.firstName,
+    lastName: body.lastName,
+    email: body.email,
+    privilege: body.privilege,
+    passwordHash,
+  });
+
+  const savedUser = await user.save();
+  res.json(savedUser);
 });
 
 module.exports = usersRouter;

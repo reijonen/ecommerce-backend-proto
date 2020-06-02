@@ -44,9 +44,7 @@ loginRouter.post("/admin", async (req, res) => {
     return res.status(401).json({ error: "invalid email or password" });
   }
   if (user.privilege === 0) {
-    return res.status(401).json({
-      error: "administrator access required",
-    });
+    return res.status(403).json({ error: "administrator access required" });
   }
   const passwordCorrect =
     user === null

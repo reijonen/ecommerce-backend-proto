@@ -25,21 +25,17 @@ productsRouter.post("/", async (req, res) => {
   } else {
     const user = await User.findById(decodedToken.id);
     if (user.privilege === 2) {
-      let categories = [];
       try {
-        await body.categories.map(async (c) => {
-          const tmp = await Category.find({ name: c });
-          if (tmp[0] === undefined) {
-            try {
-              const newCategory = new Category({ name: c, products: [] });
-              const savedCategory = await newCategory.save();
-              categories.concat(savedCategory._id);
-            } catch (e) {
-            }
-          } else {
-            categories.push(tmp[0]._id);
-          }
-        });
+        const categories = await Promise.all(
+          (body.categories || []).map(async (name) => {
+            const category = await Category.findOneAndUpdate(
+              { name },
+              { $setOnInsert: { products: [] } },
+              { new: true, upsert: true }
+            );
+            return category._id;
+          })
+        );
 
         const product = new Product({
           name: body.name,
@@ -50,22 +46,13 @@ productsRouter.post("/", async (req, res) => {
           imageUrl: body.imageUrl === "" ? undefined : body.imageUrl,
         });
         const savedProduct = await product.save();
-        categories.map(async (c) => {
-          try {
-            const tmp = await Category.findById(c);
-            Category.findByIdAndUpdate(
-              c,
-              {
-                name: tmp.name,
-                products: [...tmp.prodtucts, savedProduct._id],
-              },
-              { new: true }
-            );
-          } catch (e) {
-          }
-        });
-        res.json(savedProduct.toJSON());
+        await Category.updateMany(
+          { _id: { $in: categories } },
+          { $addToSet: { products: savedProduct._id } }
+        );
+        res.status(201).json(savedProduct.toJSON());
       } catch (e) {
+        throw e;
       }
     } else {
       return res.status(401).json({ error: "unauthorized" });
